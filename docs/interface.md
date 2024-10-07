@@ -4,7 +4,7 @@ Check [request-example.json](request-example.json) to see an example.
 
 *Italic* explains its constraints. Note that easyplotlib will return *code-reject* when any constraint has violated. `Code block` refers to other entries of the JSON.
 
-* request-id : *Is uuid4*
+* request_id : *Is uuid4*
 * figure
     * size
         * row : *Is numeric, plt.subplot(row, _)*
@@ -22,10 +22,9 @@ Check [request-example.json](request-example.json) to see an example.
         * *Every possible key-value pairs are defined at __axes-style__*
 * plot [List]
     * name : *Is string*
-    * format : *Every possible values are defined at __plot-format-list__*
     * data
-        * key: *Depending on `plot[].format`, there are different required and optional keys. Check __plot-format-list__.*
-        * value: *Is one of `data[].name`*
+        * relation : *Every possible values are defined at __plot-format-list__*
+        * {key, value}: *Depending on `plot[].format`, there are different required and optional keys. Check __plot-format-list__. Value is one of `data[].name`*
     * style
         * *Every possible key-value pairs are defined at __plot-style__*
 * data [List]
@@ -64,7 +63,7 @@ is only valid format. Note that if neither required nor optional value is given 
 
 ## axes-style
 * x-axis (vice versa, `y-axis` is supported)
-    * 
+    * **TODO**
 * y-axis
     * Same as *x-axis*
 
@@ -91,19 +90,11 @@ When request is accepted, easyplotlib is expected to return at least one respons
 }
 ```
 
-The followings are possible responses. **Note that when a request is made, the first response is one of the followings: `unacceptable`, `code-reject`, `code-return` and `unexpected-error`.**
-
-## Unacceptable (= Syntax Error)
-* When it happens
-    * Request cannot be parsed into JSON
-* What is next
-    * Termination (no further response)
-* Response format
-    * type: `unacceptable`
-    * message: `Cannot parse the request into valid JSON`
+The followings are possible responses. **Note that when a request is made, the first response is one of the followings: `code-reject`, `code-return` and `unexpected-error`.**
 
 ## Code Rejected (= Format Error)
 * When it happens
+    * Request cannot be parsed into JSON
     * Request can be parsed, but it does not follow valid request format (e.g. less or much entries)
 * What is next
     * Termination (no further response)

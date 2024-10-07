@@ -1,4 +1,4 @@
-# easy-matplotlib
+# easyplotlib
 WYSIWYG editor for matplotlib
 
 ## Dependencies

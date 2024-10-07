@@ -1,5 +1,5 @@
 {
-    "request-id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+    "request_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
     "figure": {
         "size": {
             "row": 2,
@@ -16,7 +16,7 @@
             ]
         ],
         "style": {
-            "style-name": "style-value"
+            "style_name": "style-value"
         }
     },
     "axes": [
@@ -26,7 +26,7 @@
                 "default-plot-0"
             ],
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         },
         {
@@ -35,7 +35,7 @@
                 "default-plot-1"
             ],
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         },
         {
@@ -44,7 +44,7 @@
                 "default-plot-2"
             ],
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         },
         {
@@ -55,42 +55,42 @@
                 "default-plot-2"
             ],
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         }
     ],
     "plot": [
         {
             "name": "default-plot-0",
-            "format": "plot",
             "data": {
+                "relation": "simple-plot",
                 "x": "x",
                 "y": "y1"
             },
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         },
         {
             "name": "default-plot-1",
-            "format": "plot",
             "data": {
+                "relation": "simple-plot",
                 "x": "x",
                 "y": "y2"
             },
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         },
         {
             "name": "default-plot-2",
-            "format": "plot",
             "data": {
+                "relation": "simple-plot",
                 "x": "x",
                 "y": "y2"
             },
             "style": {
-                "style-name": "style-value"
+                "style_name": "style-value"
             }
         }
     ],
