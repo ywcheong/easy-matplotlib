@@ -16,19 +16,14 @@
 import json
 import pydantic
 
-from request_model import RequestFormat
+from ..request_format.model import RequestElement, CodeReject
 
 INITIAL_CODELINE = ["import numpy as np", "import matplotlib.pyplot as plt"]
 
 
-class CodeReject(Exception):
-    def __init__(self, message):
-        self.message = message
-
-
 def request_into_model(request_string: str):
     try:
-        return RequestFormat.model_validate_json(request_string)
+        return RequestElement.model_validate_json(request_string)
     except pydantic.ValidationError as e:
         raise CodeReject(e)
 
@@ -54,7 +49,7 @@ def combine_codes(figure_code_lines, data_code_lines, axes_plot_code_lines):
 
 def request_to_code(request_string: str):
     # parse request string into json
-    request_json = request_string_to_json(request_string)
+    request_json = request_into_model(request_string)
 
     # generate figure/axes definition
     figure_code_lines = generate_figure_axes(request_json)
