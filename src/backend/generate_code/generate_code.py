@@ -25,7 +25,7 @@ def request_into_model(request_string: str):
     try:
         return RequestElement.model_validate_json(request_string)
     except pydantic.ValidationError as e:
-        raise CodeReject(e)
+        raise CodeReject("")
 
 def generate_figure_axes(request_json):
     pass
