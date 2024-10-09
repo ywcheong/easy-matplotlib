@@ -2,6 +2,7 @@ import os, pathlib
 import json
 import pytest
 
+from pydantic import ValidationError
 from src.backend.request_format import RequestElement, CodeReject
 
 TEST_FILE_PATH = pathlib.Path(__file__)
@@ -10,15 +11,18 @@ TEST_DATA_DIRECTORY = (TEST_DIRECTORY / "data").resolve()
 
 SUCCESS_CASE_PREFIX = "requestformat-success"
 FAIL_CASE_PREFIX = "requestformat-fail"
+INVALID_CASE_PREFIX = "requestformat-invalid"
 
 testcase_list = os.listdir(TEST_DATA_DIRECTORY)
-success_list, fail_list = [], []
+success_list, fail_list, invalid_list = [], [], []
 
 for testcase in testcase_list:
     if testcase.startswith(SUCCESS_CASE_PREFIX):
         success_list.append(testcase)
     elif testcase.startswith(FAIL_CASE_PREFIX):
         fail_list.append(testcase)
+    elif testcase.startswith(INVALID_CASE_PREFIX):
+        invalid_list.append(testcase)
 
 
 def read_json(filename):
@@ -36,4 +40,10 @@ def test_success_model(filename):
 def test_fail_model(filename):
     json_content = read_json(filename)
     with pytest.raises(CodeReject):
+        request_content = RequestElement.model_validate(json_content)
+
+@pytest.mark.parametrize("filename", invalid_list)
+def test_invalid_model(filename):
+    json_content = read_json(filename)
+    with pytest.raises(ValidationError):
         request_content = RequestElement.model_validate(json_content)
