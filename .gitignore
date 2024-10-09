@@ -1,2 +1,15 @@
+# temporary file for development
 tmp
+
+# cpython compiled cache
 __pycache__
+
+
+##### Pytest
+# pytest cache
+.pytest_cache
+# pytest-cov report
+.coverage
+
+# vscode server
+.vscode

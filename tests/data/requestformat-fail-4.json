@@ -1,0 +1,143 @@
+{
+    "request_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+    "figure": {
+        "size": {
+            "row": 3,
+            "column": 2
+        },
+        "axes": [
+            [
+                "default-ax-0-0",
+                "default-ax-0-1"
+            ],
+            [
+                null,
+                "default-ax-1-1"
+            ]
+        ],
+        "style": {
+            "style_name": "style-value"
+        }
+    },
+    "axes": [
+        {
+            "name": "default-ax-0-0",
+            "plot": [
+                "default-plot-0"
+            ],
+            "style": {
+                "style_name": "style-value"
+            }
+        },
+        {
+            "name": "default-ax-0-1",
+            "plot": [
+                "default-plot-1"
+            ],
+            "style": {
+                "style_name": "style-value"
+            }
+        },
+        {
+            "name": "default-ax-1-0",
+            "plot": [
+                "default-plot-2"
+            ],
+            "style": {
+                "style_name": "style-value"
+            }
+        },
+        {
+            "name": "default-ax-1-1",
+            "plot": [
+                "default-plot-0",
+                "default-plot-1",
+                "default-plot-2"
+            ],
+            "style": {
+                "style_name": "style-value"
+            }
+        }
+    ],
+    "plot": [
+        {
+            "name": "default-plot-0",
+            "data": {
+                "relation": "simple-plot",
+                "x": "x",
+                "y": "y1"
+            },
+            "style": {
+                "style_name": "style-value"
+            }
+        },
+        {
+            "name": "default-plot-1",
+            "data": {
+                "relation": "simple-plot",
+                "x": "x",
+                "y": "y2"
+            },
+            "style": {
+                "style_name": "style-value"
+            }
+        },
+        {
+            "name": "default-plot-2",
+            "data": {
+                "relation": "simple-plot",
+                "x": "x",
+                "y": "y2"
+            },
+            "style": {
+                "style_name": "style-value"
+            }
+        }
+    ],
+    "data": [
+        {
+            "name": "x",
+            "value": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ]
+        },
+        {
+            "name": "y1",
+            "value": [
+                0,
+                -3,
+                -8,
+                -15,
+                -24,
+                -35,
+                -48,
+                -63,
+                -80
+            ]
+        },
+        {
+            "name": "y2",
+            "value": [
+                8,
+                5,
+                0,
+                -7,
+                -16,
+                -27,
+                -40,
+                -55,
+                -72,
+                -91
+            ]
+        }
+    ]
+}

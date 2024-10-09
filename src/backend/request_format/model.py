@@ -162,28 +162,19 @@ class RequestElement(BaseModel):
 
         return attr
 
-    @field_validator("axes")
-    @classmethod
-    def check_axes_name_uniqueness(cls, axes: List[AxesElement]) -> List[AxesElement]:
-        axes_names = [ax.name for ax in axes]
-        duplicative_axes_names = cls.get_duplication(axes_names)
-
-        if len(duplicative_axes_names) > 0:
-            raise CodeReject(f"Duplicative axes name defined: {duplicative_axes_names}")
-
-        return axes
-
     # check if figure.axes[] has corresponding axes name
     @model_validator(mode="after")
     def check_figure_has_valid_axes(self):
         # get every existing axes name
         axes_names = [ax.name for ax in self.axes]
 
-        for i, j in itertools.product(self.figure.size.row, self.figure.size.column):
+        for i, j in itertools.product(
+            range(self.figure.size.row), range(self.figure.size.column)
+        ):
             figure_axes = self.figure.axes[i][j]
             if (figure_axes is not None) and (figure_axes not in axes_names):
                 raise CodeReject(
-                    f"Cannot find figure.axes[{i}][{j} = '{figure_axes}' in axes names"
+                    f"Cannot find figure.axes[{i}][{j}] = '{figure_axes}' in axes names"
                 )
 
         return self
@@ -208,12 +199,12 @@ class RequestElement(BaseModel):
         return self
 
     # subfunction for self.check_plot_has_valid_data
-    def lookup_single_plot(plot_element: PlotElement, data_names: List[str]):
+    def lookup_single_plot(self, plot_element: PlotElement, data_names: List[str]):
         # get declared data from plot element
         using_data_element = plot_element.data
 
         # extract data keys, except for 'relation'
-        using_data_keys = set(using_data_element.__dict__.keys()) - set("relation")
+        using_data_keys = set(using_data_element.__dict__.keys()) - {"relation"}
 
         # convert data key into values, to get using data names
         using_data_names = set(
