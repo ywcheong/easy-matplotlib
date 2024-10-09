@@ -1,0 +1,4 @@
+boto3
+matplotlib
+pydantic
+pytest
