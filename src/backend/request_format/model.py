@@ -94,9 +94,16 @@ class PlotData(BaseModel):
     relation: str
     model_config = ConfigDict(extra="forbid")
 
+    def get_param_data_dict(self):
+        result = dict()
+        param_name_list = set(self.__dict__.keys()) - {"relation"}
+        for param_name in param_name_list:
+            result[param_name] = self.__dict__[param_name]
+        return result
+
 
 class SimplePlotData(PlotData):
-    relation: Literal["simple-plot"]
+    relation: Literal["plot"]
     x: str
     y: str
 
@@ -111,6 +118,13 @@ PlotDataSupported = Union[SimplePlotData]
 class PlotStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
     style_name: Optional[str]  # debug purpose attribute - not used
+    
+    def get_style_dict(self):
+        result = dict()
+        style_name_list = set(self.__dict__.keys()) - {"style_name"}
+        for param_name in style_name_list:
+            result[param_name] = self.__dict__[param_name]
+        return result
 
 
 class PlotElement(BaseModel):
@@ -118,6 +132,26 @@ class PlotElement(BaseModel):
     name: str
     data: PlotDataSupported = Field(discriminator="relation")
     style: PlotStyle
+
+    # convert plot into axes-unlinked plot
+    def compile(self):
+        arguments = []
+
+        # retrieve data-parameter
+        param_data_dict = self.data.get_param_data_dict()
+        for param_name in param_data_dict:
+            data_name = param_data_dict[param_name]
+            arguments.append(f"{param_name}=data_{data_name}")
+
+        # retrieve style-parameter
+        style_dict = self.style.get_style_dict()
+        for style_name in style_dict:
+            style_value = style_dict[style_name]
+            arguments.append(f"{style_name}={style_value}")
+
+        # combine into one line
+        arguments_fragment = ", ".join(arguments)
+        return f"{self.data.relation}({arguments_fragment})"
 
 
 #################################################################
@@ -200,16 +234,8 @@ class RequestElement(BaseModel):
 
     # subfunction for self.check_plot_has_valid_data
     def lookup_single_plot(self, plot_element: PlotElement, data_names: List[str]):
-        # get declared data from plot element
-        using_data_element = plot_element.data
-
-        # extract data keys, except for 'relation'
-        using_data_keys = set(using_data_element.__dict__.keys()) - {"relation"}
-
-        # convert data key into values, to get using data names
-        using_data_names = set(
-            using_data_element.__dict__[key] for key in using_data_keys
-        )
+        # get plot's using data name references
+        using_data_names = set(plot_element.data.get_param_data_dict().values())
 
         # check if (using data names) is subset of (data names)
         if not using_data_names <= set(data_names):
