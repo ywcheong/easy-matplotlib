@@ -2,31 +2,38 @@ from typing import List, Tuple
 from pydantic import BaseModel, ValidationError
 
 
-class ErrorModel(BaseModel):
-    loc: str  # location of error
-    msg: str  # explaination of error
+class CauseError:
+    source: str  # location of error
+    message: str  # explaination of error
 
 
-def pretty_loc(loc: Tuple[int | str]):
+def get_readable_location(loc: Tuple[int | str]):
+    """Convert `ErrorDetails.loc` into human-friendly format. Subfunction of `get_pretty_validation_error`."""
+
     result = "request"
-
     for key in loc:
-        if type(key) == str:
+        if isinstance(key, str):
             # string key
             result += f".{key}"
-        else:
+        elif isinstance(key, int):
             # index
             result += f"[{key}]"
+        else:
+            raise TypeError(f"Unexpected type for : {type(key)}")
 
     return result
 
 
-def pretty_validation_error(e: ValidationError) -> List[ErrorModel]:
+def get_pretty_validation_error(e: ValidationError) -> List[CauseError]:
+    """Prettify the given `ValidationError` to more human-friendly format."""
     error_list = e.errors()
     error_model_list = []
 
-    for error in error_list:
-        error_model = ErrorModel(loc=pretty_loc(error["loc"]), msg=error["msg"])
+    for error_details in error_list:
+        error_model = CauseError(
+            source=get_readable_location(error_details["loc"]),
+            message=error_details["msg"],
+        )
         error_model_list.append(error_model)
 
     return error_model_list

@@ -16,16 +16,6 @@ from pydantic import (
 )
 
 #################################################################
-#   Reject - Exception
-#################################################################
-
-
-class CodeReject(Exception):
-    def __init__(self, message):
-        self.message = message
-
-
-#################################################################
 #   Figure
 #################################################################
 
@@ -54,14 +44,14 @@ class Figure(BaseModel):
 
         # check row-shape equality
         if row != len(self.axes):
-            raise CodeReject(
+            raise AssertionError(
                 "Shape of figure.axes is not equivalent to the provided (row, column)"
             )
 
         # check column-shape equality
         for axes_row in self.axes:
             if column != len(axes_row):
-                raise CodeReject(
+                raise AssertionError(
                     "Shape of figure.axes is not equivalent to the provided (row, column)"
                 )
 
@@ -190,7 +180,7 @@ class RequestElement(BaseModel):
         duplicative_attr_names = cls.get_duplicate_list(attr_names)
 
         if len(duplicative_attr_names) > 0:
-            raise CodeReject(
+            raise AssertionError(
                 f"Duplicative {info.field_name} name found: {duplicative_attr_names}"
             )
 
@@ -207,7 +197,7 @@ class RequestElement(BaseModel):
         ):
             figure_axes = self.figure.axes[i][j]
             if (figure_axes is not None) and (figure_axes not in axes_names):
-                raise CodeReject(
+                raise AssertionError(
                     f"Cannot find figure.axes[{i}][{j}] = '{figure_axes}' in axes names"
                 )
 
@@ -217,7 +207,7 @@ class RequestElement(BaseModel):
     def lookup_single_axes(self, axes_element: AxesElement, plot_names: List[str]):
         for plt in axes_element.plot:
             if plt not in plot_names:
-                raise CodeReject(
+                raise AssertionError(
                     f"Cannot find plot '{plt}' from axes {axes_element.name} in plot names"
                 )
 
@@ -240,7 +230,7 @@ class RequestElement(BaseModel):
         # check if (using data names) is subset of (data names)
         if not using_data_names <= set(data_names):
             unknown_data = using_data_names - set(data_names)
-            raise CodeReject(
+            raise AssertionError(
                 f"Cannot find data {unknown_data} from plot {plot_element.name} in data names"
             )
 

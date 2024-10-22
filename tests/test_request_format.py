@@ -3,7 +3,7 @@ import json
 import pytest
 
 from pydantic import ValidationError
-from src.backend.request_format import RequestElement, CodeReject
+from src.backend.request_format import RequestElement
 
 TEST_FILE_PATH = pathlib.Path(__file__)
 TEST_DIRECTORY = (TEST_FILE_PATH / "..").resolve()
@@ -39,7 +39,7 @@ def test_success_model(filename):
 @pytest.mark.parametrize("filename", fail_list)
 def test_fail_model(filename):
     json_content = read_json(filename)
-    with pytest.raises(CodeReject):
+    with pytest.raises(ValidationError):
         request_content = RequestElement.model_validate(json_content)
 
 @pytest.mark.parametrize("filename", invalid_list)

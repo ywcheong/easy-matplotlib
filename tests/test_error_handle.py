@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel, ValidationError, model_validator
-from src.backend.request_format import CodeReject, ErrorModel, pretty_validation_error
+from src.backend.request_format import CauseError, get_pretty_validation_error
 
 
 class Point(BaseModel):
@@ -21,16 +21,16 @@ my_circle = {
 }
 
 expected_pretty = [
-    ErrorModel(
-        loc="request.center.x",
-        msg="Input should be a valid number, unable to parse string as a number",
+    CauseError(
+        source="request.center.x",
+        message="Input should be a valid number, unable to parse string as a number",
     ),
-    ErrorModel(
-        loc="request.elses[1]",
-        msg="Input should be a valid dictionary or instance of Point",
+    CauseError(
+        source="request.elses[1]",
+        message="Input should be a valid dictionary or instance of Point",
     ),
-    ErrorModel(loc="request.elses[2].x", msg="Field required"),
-    ErrorModel(loc="request.elses[2].y", msg="Field required"),
+    CauseError(source="request.elses[2].x", message="Field required"),
+    CauseError(source="request.elses[2].y", message="Field required"),
 ]
 
 
@@ -38,4 +38,4 @@ def test_pretty():
     try:
         Circle.model_validate(my_circle)
     except ValidationError as e:
-        assert pretty_validation_error(e) == expected_pretty
+        assert get_pretty_validation_error(e) == expected_pretty
