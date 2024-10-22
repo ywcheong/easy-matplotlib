@@ -29,6 +29,8 @@ class FigureSize(BaseModel):
 class FigureStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
     style_name: Optional[str]  # debug purpose attribute - not used
+    code_indent_style: Optional[Literal["space", "tab"]] = Field(default="space")
+    code_is_function: Optional[bool] = Field(default=True)
 
 
 class Figure(BaseModel):
@@ -37,9 +39,9 @@ class Figure(BaseModel):
     axes: List[List[Optional[str]]]
     style: FigureStyle
 
-    # Check if Figure.axes.shape == (Figure.size.row, Figure.size.column)
     @model_validator(mode="after")
     def check_axes_dimension(self):
+        """Check if `shapeof(Figure.axes) == (Figure.size.row, Figure.size.column)`"""
         row, column = self.size.row, self.size.column
 
         # check row-shape equality
@@ -108,7 +110,7 @@ PlotDataSupported = Union[SimplePlotData]
 class PlotStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
     style_name: Optional[str]  # debug purpose attribute - not used
-    
+
     def get_style_dict(self):
         result = dict()
         style_name_list = set(self.__dict__.keys()) - {"style_name"}
@@ -123,8 +125,8 @@ class PlotElement(BaseModel):
     data: PlotDataSupported = Field(discriminator="relation")
     style: PlotStyle
 
-    # convert plot into axes-unlinked plot
     def compile(self):
+        """Convert PlotElement into executable code (without plot link)"""
         arguments = []
 
         # retrieve data-parameter
@@ -172,10 +174,10 @@ class RequestElement(BaseModel):
     def get_duplicate_list(cls, L: List[str]):
         return [item for (item, count) in collections.Counter(L).items() if (count > 1)]
 
-    # Check if every (axes[].name, plot[].name, data[].name) unique
     @field_validator("axes", "plot", "data")
     @classmethod
     def check_uniqueness(cls, attr: List[Any], info: ValidationInfo) -> Any:
+        """Check if every (axes[].name, plot[].name, data[].name) is unique"""
         attr_names = [at.name for at in attr]
         duplicative_attr_names = cls.get_duplicate_list(attr_names)
 
@@ -186,9 +188,9 @@ class RequestElement(BaseModel):
 
         return attr
 
-    # check if figure.axes[] has corresponding axes name
     @model_validator(mode="after")
     def check_figure_has_valid_axes(self):
+        """Check if every figure.axes[][] has valid axes name"""
         # get every existing axes name
         axes_names = [ax.name for ax in self.axes]
 
@@ -203,17 +205,17 @@ class RequestElement(BaseModel):
 
         return self
 
-    # subfunction for self.check_axes_has_valid_plot
     def lookup_single_axes(self, axes_element: AxesElement, plot_names: List[str]):
+        """subfunction for self.check_axes_has_valid_plot"""
         for plt in axes_element.plot:
             if plt not in plot_names:
                 raise AssertionError(
                     f"Cannot find plot '{plt}' from axes {axes_element.name} in plot names"
                 )
 
-    # check if axes.plot[] has corresponding plot name
     @model_validator(mode="after")
     def check_axes_has_valid_plot(self):
+        """Check if every axes[].plot has valid plot name"""
         # get every existing plot name
         plot_names = [plt.name for plt in self.plot]
 
@@ -222,8 +224,8 @@ class RequestElement(BaseModel):
 
         return self
 
-    # subfunction for self.check_plot_has_valid_data
     def lookup_single_plot(self, plot_element: PlotElement, data_names: List[str]):
+        """subfunction for self.check_plot_has_valid_data"""
         # get plot's using data name references
         using_data_names = set(plot_element.data.get_param_data_dict().values())
 
@@ -234,9 +236,9 @@ class RequestElement(BaseModel):
                 f"Cannot find data {unknown_data} from plot {plot_element.name} in data names"
             )
 
-    # check if plot[].data.(!relation) has corresponding data name
     @model_validator(mode="after")
     def check_plot_has_valid_data(self):
+        """check if every plot[].data has valid data name"""
         # get every existing data name
         data_names = [dt.name for dt in self.data]
 

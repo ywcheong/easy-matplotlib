@@ -1,8 +1,8 @@
-import os, pathlib
-import json
-import pytest
+import os, json, pathlib, logging
 
+import pytest
 from pydantic import ValidationError
+
 from src.backend.request_format import RequestElement
 
 TEST_FILE_PATH = pathlib.Path(__file__)
@@ -36,11 +36,13 @@ def test_success_model(filename):
     json_content = read_json(filename)
     request_content = RequestElement.model_validate(json_content)
 
+
 @pytest.mark.parametrize("filename", fail_list)
 def test_fail_model(filename):
     json_content = read_json(filename)
     with pytest.raises(ValidationError):
         request_content = RequestElement.model_validate(json_content)
+
 
 @pytest.mark.parametrize("filename", invalid_list)
 def test_invalid_model(filename):

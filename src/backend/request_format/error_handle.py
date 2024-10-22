@@ -2,9 +2,9 @@ from typing import List, Tuple
 from pydantic import BaseModel, ValidationError
 
 
-class CauseError:
-    source: str  # location of error
-    message: str  # explaination of error
+class CauseError(BaseModel):
+    source: str
+    message: str
 
 
 def get_readable_location(loc: Tuple[int | str]):
