@@ -65,7 +65,7 @@
             "data": {
                 "relation": "plot",
                 "x": "x",
-                "y": "not-existing-data"
+                "y": "y1"
             },
             "style": {
                 "style_name": "style-value"
@@ -75,7 +75,7 @@
             "name": "default-plot-1",
             "data": {
                 "relation": "plot",
-                "x": "x",
+                "x": "unknown_mystery",
                 "y": "y2"
             },
             "style": {
@@ -83,7 +83,7 @@
             }
         },
         {
-            "name": "import",
+            "name": "default-plot-2",
             "data": {
                 "relation": "plot",
                 "x": "x",
@@ -96,7 +96,7 @@
     ],
     "data": [
         {
-            "name": "x!!!!$$$",
+            "name": "x",
             "value": [
                 1,
                 2,
@@ -121,7 +121,8 @@
                 -35,
                 -48,
                 -63,
-                -80
+                -80,
+                17
             ]
         },
         {

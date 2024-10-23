@@ -4,16 +4,48 @@
 import collections
 import itertools
 import uuid
+import keyword
 
-from typing import List, Optional, Literal, Union, Any
+from typing import List, Optional, Literal, Union, Any, Annotated
 from pydantic import (
-    BaseModel,  
-    ConfigDict,  
+    BaseModel,
+    ConfigDict,
     ValidationInfo,
     Field,
-    field_validator,  
-    model_validator,  
+    field_validator,
+    model_validator,
 )
+from pydantic.functional_validators import AfterValidator
+
+
+#################################################################
+#   Safe Identifier for String-instead
+#################################################################
+
+def validate_safe_identifier(given_name: str) -> str:
+    """
+    For names in ``RequestElement``. Safe to use as Python identifier.
+    """
+    given_name = given_name.replace("-", "_")
+    if not given_name.isidentifier():
+        raise AssertionError(
+            f"Name '{given_name}' is too dangerous to use as an identifier in Python"
+        )
+    elif keyword.iskeyword(given_name):
+        raise AssertionError(
+            f"Name '{given_name}' is Python-reserved keyword"
+        )
+    return given_name
+
+def attach_axes(given_name: str) -> str:
+    return "axes_" + given_name
+
+def attach_data(given_name: str) -> str:
+    return "data_" + given_name
+
+SafeIndentifier = Annotated[str, AfterValidator(validate_safe_identifier)]
+SafeAxesIndentifier = Annotated[str, AfterValidator(attach_axes), AfterValidator(validate_safe_identifier)]
+SafeDataIndentifier = Annotated[str, AfterValidator(attach_data), AfterValidator(validate_safe_identifier)]
 
 #################################################################
 #   Figure
@@ -28,7 +60,7 @@ class FigureSize(BaseModel):
 
 class FigureStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    style_name: Optional[str]  # debug purpose attribute - not used
+    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
     code_indent_style: Optional[Literal["space", "tab"]] = Field(default="space")
     code_is_function: Optional[bool] = Field(default=True)
 
@@ -36,7 +68,7 @@ class FigureStyle(BaseModel):
 class Figure(BaseModel):
     model_config = ConfigDict(extra="forbid")
     size: FigureSize
-    axes: List[List[Optional[str]]]
+    axes: List[List[Optional[SafeAxesIndentifier]]]
     style: FigureStyle
 
     @model_validator(mode="after")
@@ -67,13 +99,13 @@ class Figure(BaseModel):
 
 class AxesStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    style_name: Optional[str]  # debug purpose attribute - not used
+    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
 
 
 class AxesElement(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    name: str
-    plot: List[str]
+    name: SafeAxesIndentifier
+    plot: List[SafeIndentifier]
     style: AxesStyle
 
 
@@ -82,9 +114,17 @@ class AxesElement(BaseModel):
 #################################################################
 
 
-class PlotData(BaseModel):
-    relation: str
+class BasePlotData(BaseModel):
+    """
+    Base class for RequestElement.data[]
+    """
+    relation: SafeIndentifier
     model_config = ConfigDict(extra="forbid")
+
+    def to_code(self):
+        """
+        """
+        raise NotImplementedError("BasePlotData is abstract class, call its implementation instead")
 
     def get_param_data_dict(self):
         result = dict()
@@ -94,10 +134,16 @@ class PlotData(BaseModel):
         return result
 
 
-class SimplePlotData(PlotData):
+class SimplePlotData(BasePlotData):
+    """
+    PlotData for .plot() rendering
+    """
     relation: Literal["plot"]
-    x: str
-    y: str
+    x: SafeDataIndentifier
+    y: SafeDataIndentifier
+
+    def to_code(self):
+        return f"{self.x}, {self.y}"
 
 
 PlotDataSupported = Union[SimplePlotData]
@@ -106,10 +152,13 @@ PlotDataSupported = Union[SimplePlotData]
 #   Plot
 #################################################################
 
+plot_linestyle = Literal["solid", "dashed", "dashdot", "dotted", "none"]
+
 
 class PlotStyle(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    style_name: Optional[str]  # debug purpose attribute - not used
+    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
+    linestyle: plot_linestyle = Field(default="solid")
 
     def get_style_dict(self):
         result = dict()
@@ -121,7 +170,7 @@ class PlotStyle(BaseModel):
 
 class PlotElement(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    name: str
+    name: SafeIndentifier
     data: PlotDataSupported = Field(discriminator="relation")
     style: PlotStyle
 
@@ -130,16 +179,13 @@ class PlotElement(BaseModel):
         arguments = []
 
         # retrieve data-parameter
-        param_data_dict = self.data.get_param_data_dict()
-        for param_name in param_data_dict:
-            data_name = param_data_dict[param_name]
-            arguments.append(f"{param_name}=data_{data_name}")
+        arguments.append(self.data.to_code())
 
         # retrieve style-parameter
         style_dict = self.style.get_style_dict()
         for style_name in style_dict:
             style_value = style_dict[style_name]
-            arguments.append(f"{style_name}={style_value}")
+            arguments.append(f"{style_name}='{style_value}'")
 
         # combine into one line
         arguments_fragment = ", ".join(arguments)
@@ -153,7 +199,7 @@ class PlotElement(BaseModel):
 
 class DataElement(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    name: str
+    name: SafeDataIndentifier
     value: List[float]
 
 
@@ -169,6 +215,7 @@ class RequestElement(BaseModel):
     * Axes.plot   <-0..N / 0..N-> Plot
     * Plot.data   <-1..1 / 0..N-> Data
     """
+
     model_config = ConfigDict(extra="forbid")
     request_id: uuid.UUID
     figure: Figure
@@ -182,7 +229,11 @@ class RequestElement(BaseModel):
 
     @field_validator("axes", "plot", "data")
     @classmethod
-    def check_uniqueness(cls, attr: List[Any], info: ValidationInfo) -> Any:
+    def check_uniqueness(
+        cls,
+        attr: List[Union[AxesElement, PlotElement, DataElement]],
+        info: ValidationInfo,
+    ) -> Any:
         """Check if every (axes[].name, plot[].name, data[].name) is unique"""
         attr_names = [at.name for at in attr]
         duplicative_attr_names = cls.get_duplicate_list(attr_names)
