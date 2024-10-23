@@ -27,13 +27,13 @@ def get_readable_location(loc: Tuple[int | str]):
 def get_pretty_validation_error(e: ValidationError) -> List[CauseError]:
     """Prettify the given `ValidationError` to more human-friendly format."""
     error_list = e.errors()
-    error_model_list = []
+    cause_error_list = []
 
     for error_details in error_list:
         error_model = CauseError(
             source=get_readable_location(error_details["loc"]),
             message=error_details["msg"],
         )
-        error_model_list.append(error_model)
+        cause_error_list.append(error_model)
 
-    return error_model_list
+    return cause_error_list

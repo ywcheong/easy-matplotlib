@@ -19,7 +19,7 @@ def lambda_log(log_when_success: bool):
         log_when_success (bool): if ``True``, successful execution would also be logged.
 
     Returns:
-        If no error, returns original function's returned value. If error, returns ``None``.
+        Any: If no error, returns original function's returned value. If error, returns ``None``.
     """
 
     def try_function_and_log(given_function):

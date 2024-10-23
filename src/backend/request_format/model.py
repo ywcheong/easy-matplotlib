@@ -7,12 +7,12 @@ import uuid
 
 from typing import List, Optional, Literal, Union, Any
 from pydantic import (
-    BaseModel,  # Base class
-    ConfigDict,  # Configuration class
-    ValidationInfo,  # For multi-field validation
-    Field,  # For simple validation
-    field_validator,  # For complex single validation
-    model_validator,  # For complex overall validation
+    BaseModel,  
+    ConfigDict,  
+    ValidationInfo,
+    Field,
+    field_validator,  
+    model_validator,  
 )
 
 #################################################################
@@ -125,7 +125,7 @@ class PlotElement(BaseModel):
     data: PlotDataSupported = Field(discriminator="relation")
     style: PlotStyle
 
-    def compile(self):
+    def to_code(self) -> str:
         """Convert PlotElement into executable code (without plot link)"""
         arguments = []
 
@@ -163,6 +163,12 @@ class DataElement(BaseModel):
 
 
 class RequestElement(BaseModel):
+    """
+    ER Relation
+    * Figure.axes <-0..1 / 0..1-> Axes
+    * Axes.plot   <-0..N / 0..N-> Plot
+    * Plot.data   <-1..1 / 0..N-> Data
+    """
     model_config = ConfigDict(extra="forbid")
     request_id: uuid.UUID
     figure: Figure
@@ -190,32 +196,32 @@ class RequestElement(BaseModel):
 
     @model_validator(mode="after")
     def check_figure_has_valid_axes(self):
-        """Check if every figure.axes[][] has valid axes name"""
+        """Check if every figure.axes[][] is valid Axes[].name"""
         # get every existing axes name
         axes_names = [ax.name for ax in self.axes]
 
         for i, j in itertools.product(
             range(self.figure.size.row), range(self.figure.size.column)
         ):
-            figure_axes = self.figure.axes[i][j]
-            if (figure_axes is not None) and (figure_axes not in axes_names):
+            axes_name = self.figure.axes[i][j]
+            if (axes_name is not None) and (axes_name not in axes_names):
                 raise AssertionError(
-                    f"Cannot find figure.axes[{i}][{j}] = '{figure_axes}' in axes names"
+                    f"Cannot find figure.axes[{i}][{j}] = '{axes_name}' in axes names"
                 )
 
         return self
 
-    def lookup_single_axes(self, axes_element: AxesElement, plot_names: List[str]):
+    def lookup_single_axes(self, axes_element: AxesElement, plot_name_list: List[str]):
         """subfunction for self.check_axes_has_valid_plot"""
-        for plt in axes_element.plot:
-            if plt not in plot_names:
+        for plot_name in axes_element.plot:
+            if plot_name not in plot_name_list:
                 raise AssertionError(
-                    f"Cannot find plot '{plt}' from axes {axes_element.name} in plot names"
+                    f"Cannot find plot '{plot_name}' from axes {axes_element.name} in plot names"
                 )
 
     @model_validator(mode="after")
     def check_axes_has_valid_plot(self):
-        """Check if every axes[].plot has valid plot name"""
+        """Check if every axes[].plot is valid plot[].name"""
         # get every existing plot name
         plot_names = [plt.name for plt in self.plot]
 
@@ -224,21 +230,21 @@ class RequestElement(BaseModel):
 
         return self
 
-    def lookup_single_plot(self, plot_element: PlotElement, data_names: List[str]):
+    def lookup_single_plot(self, plot_element: PlotElement, data_name_list: List[str]):
         """subfunction for self.check_plot_has_valid_data"""
         # get plot's using data name references
         using_data_names = set(plot_element.data.get_param_data_dict().values())
 
         # check if (using data names) is subset of (data names)
-        if not using_data_names <= set(data_names):
-            unknown_data = using_data_names - set(data_names)
+        if not using_data_names <= set(data_name_list):
+            unknown_data = using_data_names - set(data_name_list)
             raise AssertionError(
                 f"Cannot find data {unknown_data} from plot {plot_element.name} in data names"
             )
 
     @model_validator(mode="after")
     def check_plot_has_valid_data(self):
-        """check if every plot[].data has valid data name"""
+        """check if every plot[].data is valid data[].name"""
         # get every existing data name
         data_names = [dt.name for dt in self.data]
 
