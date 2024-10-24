@@ -7,8 +7,8 @@ _aws_cloudwatch_logger.setLevel(logging.INFO)
 
 def lambda_log(log_when_success: bool):
     """
-    Decorator function.
-
+    Decorator. Logs when decorated function raises Exception.
+    
     When given function is executed, it wraps the function into try-catch block and executes it.
     You can decorate any function as you want.
 
@@ -50,7 +50,7 @@ def lambda_log(log_when_success: bool):
 
 def lambda_response(given_function):
     """
-    Decorator function.
+    Decorator. Return the result of decorated function via WebSocket.
 
     When given function is executed, its result will be directed into user response via Websocket.
     Note that multiple @lambda_response is allowed, since this is websocket program.

@@ -22,6 +22,7 @@ from pydantic.functional_validators import AfterValidator
 #   Safe Identifier for String-instead
 #################################################################
 
+
 def validate_safe_identifier(given_name: str) -> str:
     """
     For names in ``RequestElement``. Safe to use as Python identifier.
@@ -32,20 +33,42 @@ def validate_safe_identifier(given_name: str) -> str:
             f"Name '{given_name}' is too dangerous to use as an identifier in Python"
         )
     elif keyword.iskeyword(given_name):
-        raise AssertionError(
-            f"Name '{given_name}' is Python-reserved keyword"
-        )
+        raise AssertionError(f"Name '{given_name}' is Python-reserved keyword")
     return given_name
+
 
 def attach_axes(given_name: str) -> str:
     return "axes_" + given_name
 
+
 def attach_data(given_name: str) -> str:
     return "data_" + given_name
 
+
 SafeIndentifier = Annotated[str, AfterValidator(validate_safe_identifier)]
-SafeAxesIndentifier = Annotated[str, AfterValidator(attach_axes), AfterValidator(validate_safe_identifier)]
-SafeDataIndentifier = Annotated[str, AfterValidator(attach_data), AfterValidator(validate_safe_identifier)]
+SafeAxesIndentifier = Annotated[
+    str, AfterValidator(attach_axes), AfterValidator(validate_safe_identifier)
+]
+SafeDataIndentifier = Annotated[
+    str, AfterValidator(attach_data), AfterValidator(validate_safe_identifier)
+]
+
+#################################################################
+#   Styles
+#################################################################
+
+
+class BaseStyle(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
+
+    def get_style_dict(self):
+        result = dict()
+        style_name_list = set(self.__dict__.keys()) - {"style_name"}
+        for param_name in style_name_list:
+            result[param_name] = self.__dict__[param_name]
+        return result
+
 
 #################################################################
 #   Figure
@@ -58,9 +81,7 @@ class FigureSize(BaseModel):
     column: int = Field(gt=0)
 
 
-class FigureStyle(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
+class FigureStyle(BaseStyle):
     code_indent_style: Optional[Literal["space", "tab"]] = Field(default="space")
     code_is_function: Optional[bool] = Field(default=True)
 
@@ -97,9 +118,8 @@ class Figure(BaseModel):
 #################################################################
 
 
-class AxesStyle(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
+class AxesStyle(BaseStyle):
+    pass
 
 
 class AxesElement(BaseModel):
@@ -114,17 +134,23 @@ class AxesElement(BaseModel):
 #################################################################
 
 
+def concat_data(*args):
+    return ", ".join([arg for arg in args if arg is not None])
+
+
 class BasePlotData(BaseModel):
     """
     Base class for RequestElement.data[]
     """
+
     relation: SafeIndentifier
     model_config = ConfigDict(extra="forbid")
 
     def to_code(self):
-        """
-        """
-        raise NotImplementedError("BasePlotData is abstract class, call its implementation instead")
+        """ """
+        raise NotImplementedError(
+            "BasePlotData is abstract class, call its implementation instead"
+        )
 
     def get_param_data_dict(self):
         result = dict()
@@ -138,12 +164,13 @@ class SimplePlotData(BasePlotData):
     """
     PlotData for .plot() rendering
     """
+
     relation: Literal["plot"]
     x: SafeDataIndentifier
     y: SafeDataIndentifier
 
     def to_code(self):
-        return f"{self.x}, {self.y}"
+        return concat_data(self.x, self.y)
 
 
 PlotDataSupported = Union[SimplePlotData]
@@ -155,17 +182,8 @@ PlotDataSupported = Union[SimplePlotData]
 plot_linestyle = Literal["solid", "dashed", "dashdot", "dotted", "none"]
 
 
-class PlotStyle(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    style_name: Optional[SafeIndentifier]  # debug purpose attribute - not used
+class PlotStyle(BaseStyle):
     linestyle: plot_linestyle = Field(default="solid")
-
-    def get_style_dict(self):
-        result = dict()
-        style_name_list = set(self.__dict__.keys()) - {"style_name"}
-        for param_name in style_name_list:
-            result[param_name] = self.__dict__[param_name]
-        return result
 
 
 class PlotElement(BaseModel):
