@@ -6,11 +6,11 @@ Web-based editor for matplotlib. Easy to use.
 
 ## TODO
 * Frontend
-    * EditorView
-        * UserInputView
-    * RenderView
-        * CodeRenderView
-        * FigureRenderView
+    * EditorDisplay
+        * EditorFormDisplay
+    * RenderDisplay
+        * RenderCodeDisplay
+        * RenderFigureDisplay
     * AboutView
 * Backend
     * Features
