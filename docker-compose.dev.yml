@@ -1,0 +1,16 @@
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        volumes:
+            - ./backend/:/backend/
+        ports:
+            - "8000:8000"
+        command: tail -f /dev/null
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        volumes:
+            - ./frontend/:/frontend/
