@@ -321,3 +321,7 @@ class RequestElement(BaseModel):
             self.lookup_single_plot(plot_element, data_names)
 
         return self
+
+if __name__ == '__main__':
+    import json
+    print(json.dumps(RequestElement.model_json_schema(), indent=2))

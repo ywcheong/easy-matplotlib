@@ -24,7 +24,7 @@ if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ]; then
 fi
 
 # Validate component argument
-if [ "$COMPONENT" != "full" ] && [ "$COMPONENT" != "front" ] && [ "$COMPONENT" != "front" ] && [ "$COMPONENT" != "down" ]; then
+if [ "$COMPONENT" != "full" ] && [ "$COMPONENT" != "front" ] && [ "$COMPONENT" != "back" ] && [ "$COMPONENT" != "down" ]; then
     echo "Invalid component. Use 'full', 'front', or 'back'. If you want to end the execution, use 'down'."
     usage
 fi
