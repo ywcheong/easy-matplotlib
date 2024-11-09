@@ -1,0 +1,13 @@
+.gitignore
+.dockerignore
+
+# gitignore context
+__pycache__
+.pytest_cache
+.coverage
+temp
+
+# docker context
+Dockerfile*
+
+# dependancy context

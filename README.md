@@ -2,38 +2,42 @@
 
 ![Easyplotlib banner image](docs/easyplotlib-banner.png)
 
-Web-based editor for matplotlib. Easy to use.
+Easyplotlib is a web-based editor that makes it easy to create [matplotlib](https://matplotlib.org/) [(github)](https://github.com/matplotlib/matplotlib) diagrams and code. Working with a Python backend and a Vue frontend.
 
 ## Instruction
 
-The commands you run depend on the purpose. Execute the commands below for your desired usecase. Note that you only need to run one of the commands for each usecase; `./run.sh` is just a shortened form of the longer command.
+The commands you run depend on the purpose. Execute the commands below for your desired usecase.
 
 ```bash
-# Development
+# === Production ===
 ## Full Stack
-docker compose up -f docker-compose-dev.yml --build -d
-./run.sh dev full
-
-## Front only
-docker compose up -f docker-compose-dev.yml --build -d frontend
-./run.sh dev front
-
-## Backend only
-docker compose up -f docker-compose-dev.yml --build -d backend
-./run.sh dev back
-
-# Production
-## Full Stack
-docker compose up -f docker-compose-prod.yml --build -d
 ./run.sh prod full
 
 ## Front only
-docker compose up -f docker-compose-prod.yml --build -d frontend
 ./run.sh prod front
 
 ## Backend only
-docker compose up -f docker-compose-prod.yml --build -d backend
 ./run.sh prod back
+
+## Stop
+./run.sh prod down
+```
+
+For development, execute the below.
+
+```bash
+# === Development ===
+## Full Stack
+./run.sh dev full
+
+## Front only
+./run.sh dev front
+
+## Backend only
+./run.sh dev back
+
+## Stop
+./run.sh dev stop
 ```
 
 ## TODO
@@ -57,4 +61,4 @@ docker compose up -f docker-compose-prod.yml --build -d backend
   * Security
     * Set limit to given objects (such as len(plot),...)
 * Documentation
-  * Complete README.mddocker compose build [<service_name>]
+  * Complete README.md
