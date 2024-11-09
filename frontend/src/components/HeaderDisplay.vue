@@ -1,19 +1,6 @@
 <script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
-import SplitButton from 'primevue/splitbutton';
-
-const alternativeRenderList = [
-    {
-        label: 'Render code only',
-        icon: 'pi pi-code',
-        size: 'small',
-        command: () => {
-            console.log('render-code-only-pressed');
-        }
-    },
-]
-
 </script>
 
 <template>
@@ -27,17 +14,25 @@ const alternativeRenderList = [
             </template>
 
             <template #end>
-                <SplitButton rounded :model="alternativeRenderList" size="small">
+                <Button size="small" class="mr-4">
+                    <span class="flex items-center">
+                        <i class="pi pi-code"></i>
+                        <span class="pl-2">
+                            Render Code Only
+                        </span>
+                    </span>
+                </Button>
+                <Button size="small">
                     <span class="flex items-center">
                         <i class="pi pi-palette"></i>
-                        <span class="pl-2 pr-3">
-                            Render
+                        <span class="pl-2 pr-2">
+                            Render All
                         </span>
-                        <span class="text-xs p-0.5 bg-gray-200 text-gray-700 rounded">
+                        <span class="text-xs p-0.5 bg-gray-200 text-gray-700">
                             Ctrl+S
                         </span>
                     </span>
-                </SplitButton>
+                </Button>
             </template>
         </Toolbar>
     </header>

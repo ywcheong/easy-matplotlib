@@ -7,10 +7,12 @@ import App from './App.vue'
 import router from './router'
 
 import PrimeVue from 'primevue/config'
+import Tooltip from 'primevue/tooltip';
 import { definePreset } from '@primevue/themes'
 import Aura from '@primevue/themes/aura'
+import Nora from '@primevue/themes/nora'
 
-const MyPreset = definePreset(Aura, {
+const MyPreset = definePreset(Nora, {
     semantic: {
         primary: {
             50: '{teal.50}',
@@ -43,5 +45,7 @@ app.use(PrimeVue, {
         }
     }
 })
+
+app.directive('tooltip', Tooltip)
 
 app.mount('#app')

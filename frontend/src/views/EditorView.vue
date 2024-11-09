@@ -11,8 +11,14 @@ import EditorFormDisplay from '@components/EditorFormDisplay.vue';
     <SplitterPanel :min-size="20">
       <RenderDisplay />
     </SplitterPanel>
-    <SplitterPanel :min-size="20">
+    <SplitterPanel class="editor-area" :min-size="20">
       <EditorFormDisplay />
     </SplitterPanel>
   </Splitter>
 </template>
+
+<style scoped>
+.editor-area {
+  overflow: auto !important;
+}
+</style>
