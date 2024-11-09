@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.2.1",
+    "ajv": "^8.17.1",
     "pinia": "^2.2.6",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
+    "uuid": "^11.0.2",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },

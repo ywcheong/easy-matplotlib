@@ -4,6 +4,10 @@
 
 Easyplotlib is a web-based editor that makes it easy to create [matplotlib](https://matplotlib.org/) [(github)](https://github.com/matplotlib/matplotlib) diagrams and code. Working with a Python backend and a Vue frontend.
 
+## Dependencies
+
+You need `docker`, `docker compose` to run this project.
+
 ## Instruction
 
 The commands you run depend on the purpose. Execute the commands below for your desired usecase.
