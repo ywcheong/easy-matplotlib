@@ -1,38 +1,43 @@
-# Request
-## Format - JSON
+# Interface
+
+## THIS IS OUTDATED INTERFACE!!! TODO REWRITE
+
+## Request
+
 Check [request-example.json](request-example.json) to see an example.
 
 *Italic* explains its constraints. Note that easyplotlib will return *code-reject* when any constraint has violated. `Code block` refers to other entries of the JSON.
 
 * request_id : *Is uuid4*
 * figure
-    * size
-        * row : *Is numeric, plt.subplot(row, _)*
-        * column : *Is numeric, plt.subplot(_, column)*
-    * axes [List] : *length of `figure.size.row`*
-        * [List] : *length of `figure.size.column`*
-            * *Is one of `axes[].name` or null. Null axes will not be rendered, as it never exists*
-    * style
-        * *Every possible key-value pairs are defined at __figure-style__*
+  * size
+    * row : *Is numeric, plt.subplot(row, _)*
+    * column : *Is numeric, plt.subplot(_, column)*
+  * axes [List] : *length of `figure.size.row`*
+    * [List] : *length of `figure.size.column`*
+      * *Is one of `axes[].name` or null. Null axes will not be rendered, as it never exists*
+  * style
+    * *Every possible key-value pairs are defined at __figure-style__*
 * axes [List]
-    * name : *Is string*
-    * plot [List]
-        * *Is one of `plot[].name`*
-    * style
-        * *Every possible key-value pairs are defined at __axes-style__*
+  * name : *Is string*
+  * plot [List]
+    * *Is one of `plot[].name`*
+  * style
+    * *Every possible key-value pairs are defined at __axes-style__*
 * plot [List]
-    * name : *Is string*
-    * data
-        * relation : *Every possible values are defined at __plot-format-list__*
-        * {key, value}: *Depending on `plot[].format`, there are different required and optional keys. Check __plot-format-list__. Value is one of `data[].name`*
-    * style
-        * *Every possible key-value pairs are defined at __plot-style__*
+  * name : *Is string*
+  * data
+    * relation : *Every possible values are defined at __plot-format-list__*
+    * {key, value}: *Depending on `plot[].format`, there are different required and optional keys. Check __plot-format-list__. Value is one of `data[].name`*
+  * style
+    * *Every possible key-value pairs are defined at __plot-style__*
 * data [List]
-    * name : *Is string*
-    * value [List]
-        * *Is numeric*
+  * name : *Is string*
+  * value [List]
+    * *Is numeric*
 
 ## plot-format-list
+
 First level represents the value of `plot[].format`, while second level represents key of `plot[].data`. For example, when `format = plot`, then
 
 ```json
@@ -53,21 +58,22 @@ First level represents the value of `plot[].format`, while second level represen
 is only valid format. Note that if neither required nor optional value is given as a key of `plot[].data`, easyplotlib will return *code-reject*.
 
 * plot
-    * Required: `x`, `y`
-    * Optional: None
+  * Required: `x`, `y`
+  * Optional: None
 
 ## figure-style
-
 
 * title
 
 ## axes-style
+
 * x-axis (vice versa, `y-axis` is supported)
-    * **TODO**
+  * __TODO__
 * y-axis
-    * Same as *x-axis*
+  * Same as *x-axis*
 
 ## plot-style
+
 First level represents the key of `plot[].style`, while second level represents value. Note that some of styles are only supported in some formats of plot. If unsupported style is given, for example *linestyle* for scatter format, easyplotlib will return *code-reject*.
 
 Note that this part is still on progress, so not written.
@@ -79,9 +85,10 @@ Note that this part is still on progress, so not written.
 * marker-size
 * marker-style
 
+## Response
 
-# Response
 When request is accepted, easyplotlib is expected to return at least one response in JSON format corresponding to the request. Note that the response contains same `request-id` to ensure client what is the causative request. The following is one of the response example.
+Format - JSON
 
 ```json
 {
@@ -90,51 +97,56 @@ When request is accepted, easyplotlib is expected to return at least one respons
 }
 ```
 
-The followings are possible responses. **Note that when a request is made, the first response is one of the followings: `code-reject`, `code-return` and `unexpected-error`.**
+The followings are possible responses. __Note that when a request is made, the first response is one of the followings: `code-reject`, `code-return` and `unexpected-error`.__
 
-## Code Rejected (= Format Error)
-* When it happens
-    * Request cannot be parsed into JSON
-    * Request can be parsed, but it does not follow valid request format (e.g. less or much entries)
-* What is next
-    * Termination (no further response)
-* Response format
-    * type: `code-reject`
-    * message: depends on error
+### Code Rejected (= Format Error)
 
-## Code Returned (= Valid and try to make image)
 * When it happens
-    * Request can be parsed and is valid request format, so successfully generated Python code to make an image
+  * Request cannot be parsed into JSON
+  * Request can be parsed, but it does not follow valid request format (e.g. less or much entries)
 * What is next
-    * Try to make an image. Based on the result, `image-reject` or `image-return` will be next response.
+  * Termination (no further response)
 * Response format
-    * type: `code-return`
-    * message: depends on error
+  * type: `code-reject`
+  * message: depends on error
 
-## Image Rejected (= Issues like timeout)
-* When it happens
-    * Image cannot be generated because of expected issue, such as timeout
-* What is next
-    * Termination (no further response)
-* Response format
-    * type: `image-reject`
-    * message: depends on reason
+### Code Returned (= Valid and try to make image)
 
-## Image Returned (= Image made)
 * When it happens
-    * Image is successfully generated by the given request
+  * Request can be parsed and is valid request format, so successfully generated Python code to make an image
 * What is next
-    * Termination (no further response)
+  * Try to make an image. Based on the result, `image-reject` or `image-return` will be next response.
 * Response format
-    * type: `image-return`
-    * message: Base64-encoded Data URL of image
+  * type: `code-return`
+  * message: depends on error
 
-## Unexpected Error
+### Image Rejected (= Issues like timeout)
+
 * When it happens
-    * Unhandled error occurs, so global try-catch block catches the process flow
-    * **Can happen in any stage of response**
+  * Image cannot be generated because of expected issue, such as timeout
 * What is next
-    * Termination (no further response, and error logged)
+  * Termination (no further response)
 * Response format
-    * type: `unexpected-error`
-    * message: `Unexpected error occured, and is automatically reported`
+  * type: `image-reject`
+  * message: depends on reason
+
+### Image Returned (= Image made)
+
+* When it happens
+  * Image is successfully generated by the given request
+* What is next
+  * Termination (no further response)
+* Response format
+  * type: `image-return`
+  * message: Base64-encoded Data URL of image
+
+### Unexpected Error
+
+* When it happens
+  * Unhandled error occurs, so global try-catch block catches the process flow
+  * __Can happen in any stage of response__
+* What is next
+  * Termination (no further response, and error logged)
+* Response format
+  * type: `unexpected-error`
+  * message: `Unexpected error occured, and is automatically reported`

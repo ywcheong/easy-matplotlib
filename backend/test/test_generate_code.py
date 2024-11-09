@@ -1,8 +1,8 @@
 import pytest
 
-from src.backend.request_format import RequestElement
-from src.backend.generate_code import GenerateCode
-from tests.test_helper import TestHelper
+from src.request_format import RequestElement
+from src.generate_code import GenerateCode
+from .test_helper import TestHelper
 
 def test_generate_code():
     test_file = 'requestformat-success-1.json'

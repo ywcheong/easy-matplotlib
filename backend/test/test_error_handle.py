@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel, ValidationError, model_validator
-from src.backend.request_format import CauseError, get_pretty_validation_error
+from src.request_format import CauseError, get_pretty_validation_error
 
 
 class Point(BaseModel):

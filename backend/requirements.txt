@@ -1,4 +1,5 @@
 matplotlib
+fastapi[standard]
 pydantic
 pytest
 pytest-cov

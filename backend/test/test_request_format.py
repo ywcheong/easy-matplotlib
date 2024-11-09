@@ -1,9 +1,9 @@
 import pytest
 from pydantic import ValidationError
 
-from src.backend.request_format import RequestElement
-from src.backend.request_format.model import PlotElement, SimplePlotData, PlotStyle
-from tests.test_helper import TestHelper
+from src.request_format import RequestElement
+from src.request_format.model import PlotElement, SimplePlotData, PlotStyle
+from .test_helper import TestHelper
 
 
 @pytest.mark.parametrize("filename", TestHelper.success())

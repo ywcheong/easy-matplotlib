@@ -1,0 +1,8 @@
+# cpython cache
+__pycache__
+
+# pytest cache
+.pytest_cache
+
+# pytest-cov report
+.coverage

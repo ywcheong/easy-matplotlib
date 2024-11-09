@@ -1,7 +1,7 @@
 import copy, itertools
 from typing import List, Optional
 
-from ..request_format.model import RequestElement, AxesElement
+from ..request_format.model import RequestElement
 
 
 class GenerateCode:
