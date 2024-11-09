@@ -1,15 +1,14 @@
 import './assets/main.css'
 
-// Vue + Pinia + Router // Default things
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+
 import App from './App.vue'
 import router from './router'
 
-// PrimeVue // Preset-UI
-import PrimeVue from 'primevue/config';
+import PrimeVue from 'primevue/config'
 import { definePreset } from '@primevue/themes'
-import Aura from '@primevue/themes/aura';
+import Aura from '@primevue/themes/aura'
 
 const MyPreset = definePreset(Aura, {
     semantic: {
@@ -27,11 +26,13 @@ const MyPreset = definePreset(Aura, {
             950: '{teal.950}'
         }
     }
-});
+})
 
 const app = createApp(App)
-app.use(router)
+
 app.use(createPinia())
+app.use(router)
+
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,

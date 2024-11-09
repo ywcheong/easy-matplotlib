@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import SplitButton from 'primevue/splitbutton';

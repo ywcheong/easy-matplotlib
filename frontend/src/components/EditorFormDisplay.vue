@@ -1,25 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import Panel from 'primevue/panel';
-import Button from 'primevue/button';
-import Toolbar from 'primevue/toolbar';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-import SplitButton from 'primevue/splitbutton';
 import ScrollPanel from 'primevue/scrollpanel';
 </script>
 
 <template>
     <ScrollPanel>
-        <Panel header="Layout">
+        <Panel header="1. Setup Figure">
     
         </Panel>
-        <Panel header="Subplots">
+        <Panel header="2. Prepare Data">
     
         </Panel>
-        <Panel header="Plotting">
+        <Panel header="3. Draw Subplot with Data">
     
         </Panel>
-        <Panel header="Data">
+        <Panel header="4. Place Subplots into Figure">
+    
+        </Panel>
+        <Panel header="5. Render Figure">
     
         </Panel>
     </ScrollPanel>

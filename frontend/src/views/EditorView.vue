@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 
-import RenderDisplay from '@/components/RenderDisplay.vue';
-import EditorFormDisplay from '@/components/EditorFormDisplay.vue';
+import RenderDisplay from '@components/RenderDisplay.vue';
+import EditorFormDisplay from '@components/EditorFormDisplay.vue';
 </script>
 
 <template>

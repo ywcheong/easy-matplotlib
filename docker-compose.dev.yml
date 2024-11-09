@@ -17,4 +17,7 @@ services:
             - /frontend/node_modules
         ports:
             - "5173:5173"
-        command: npm run dev
+        expose:
+            - 5173
+        command: tail -f /dev/null
+        # command: npm run dev
