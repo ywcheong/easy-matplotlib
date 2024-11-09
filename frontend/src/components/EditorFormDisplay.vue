@@ -2,29 +2,29 @@
 import Panel from 'primevue/panel';
 import ScrollPanel from 'primevue/scrollpanel';
 
-import DataFormDisplay from '@components/DataFormDisplay.vue'
+import PrepareDataDisplay from '@components/PrepareDataDisplay.vue'
+import SetupFigureDisplay from '@components/SetupFigureDisplay.vue';
+import PlaceSubplotDisplay from './PlaceSubplotDisplay.vue';
 
 </script>
 
 <template>
     <ScrollPanel>
         <Panel header="1. Setup Figure">
-            Fig.subplot = (n, m)
-            Fig.SetStyle
+            <SetupFigureDisplay />
+            [TODO FigureStyleDisplay /]
         </Panel>
         <Panel header="2. Prepare Data">
-            <DataFormDisplay />
+            <PrepareDataDisplay />
         </Panel>
         <Panel header="3. Draw Graph with Data">
             .UNLINK.PL1 <== SimplePlot(Dx, Dy)
-            .UNLINK.PL1.SetStyle
+            [PER TODO PlotStyleDisplay /]
         </Panel>
         <Panel header="4. Place Graph into Subplot">
+            <PlaceSubplotDisplay />
             Axes[0][1] <- .UNLINK.PL1 + .UNLINK.PL2
-            Axes[0][1].SetStyle
-        </Panel>
-        <Panel header="5. Render Figure">
-            Click [Render (Ctrl + S)] to render your figure!
+            [PER TODO PlotStyleDisplay /]
         </Panel>
     </ScrollPanel>
 </template>

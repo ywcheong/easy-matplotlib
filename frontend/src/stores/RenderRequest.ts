@@ -200,6 +200,9 @@ export const useRenderRequestStore = defineStore('renderRequest', () => {
         }
     }
 
+    // add one dummy data
+    addEmptyData();
+
     return {
         renderRequest,
         getFigure,
