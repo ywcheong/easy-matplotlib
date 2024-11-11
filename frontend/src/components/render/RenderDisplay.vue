@@ -2,8 +2,8 @@
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 
-import RenderCodeDisplay from '@components/RenderCodeDisplay.vue';
-import RenderFigureDisplay from '@components/RenderFigureDisplay.vue';
+import RenderCodeDisplay from './RenderCodeDisplay.vue';
+import RenderFigureDisplay from './RenderFigureDisplay.vue';
 </script>
 
 <template>
