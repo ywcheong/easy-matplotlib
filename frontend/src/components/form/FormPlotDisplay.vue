@@ -1,7 +1,7 @@
 <template>
     <Card class="border border-black mb-3" v-for="(plotItem, index) in RenderRequest.getPlot" :key="index">
         <!-- Title -->
-        <template #title class="font-extrabold">Simple Plot</template>
+        <template #title class="font-extrabold">{{ plotItem.data.getDescriptivePlotType() }}</template>
 
         <template #content>
             <!-- Plot Naming -->
@@ -61,22 +61,75 @@
         </template>
     </Card>
 
-    <Button label="New Plot" icon="pi pi-plus" class="p-button-success" size="small" @click="addNewPlot" />
+    <Button label="New Plot" icon="pi pi-plus" class="p-button-success" size="small" @click="newPlotSelect = true;"/>
+    <Dialog header="New Plot" v-model:visible="newPlotSelect" :modal="true">
+        <template #footer>
+            <!-- Display 3 x 3 squares, each square has black border with descriptive image at its center, and below the image,
+             the description text is displayed. 
+                After clicking on the square, the dialog will close and the new plot will be added to the list. -->
+            <div class="grid grid-cols-4 gap-4">
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('plot');" />
+                    <span>Line-Dot Plot</span>
+                    <span>(.plot)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('scatter');" />
+                    <span>Scatter Plot</span>
+                    <span>(.scatter)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('bar');" />
+                    <span>Bar Plot</span>
+                    <span>(.bar)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pie');" />
+                    <span>Pie Plot</span>
+                    <span>(.pie)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('fill');" />
+                    <span>Fill Plot</span>
+                    <span>(.fill)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('imshow');" />
+                    <span>Image Show Plot</span>
+                    <span>(.imshow)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('contour');"/>
+                    <span>Contour Plot</span>
+                    <span>(.contour)</span>
+                </div>
+                <div class="border border-black flex flex-col items-center">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pcolormesh');" />
+                    <span>Color Mesh Plot</span>
+                    <span>(.pcolormesh)</span>
+                </div>
+            </div>
+        </template>
+    </Dialog>
+
+
 </template>
 
 <script setup lang="ts">
-import { Card, FloatLabel, InputText, Button, Select } from 'primevue';
+import { ref } from 'vue';
+import { Card, FloatLabel, InputText, Button, Select, Dialog } from 'primevue';
 import { useRenderRequestStore, PlotElement } from '@/stores/RenderRequest';
 
 const RenderRequest = useRenderRequestStore();
-
-const addNewPlot = () => RenderRequest.addEmptyPlot('plot');
 
 const deletePlot = (index: number) => RenderRequest.deletePlot(index);
 
 const isPlotMemberInvalid = (plotItem: PlotElement, memberName: string) => {
     return plotItem.data.isMemberRequired(memberName) && plotItem.data.getMemberData(memberName).length === 0;
 };
+
+// new plot select
+const newPlotSelect = ref(false);
 </script>
 
 <style lang="css" scoped></style>

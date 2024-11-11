@@ -64,12 +64,16 @@ interface DataElement {
 //   Plot.Data Format
 // =====================================================
 
-type PlotType = 'plot' | 'bar' | 'imshow' | 'contour' | 'pcolormesh' | 'pie' | 'fill';
+type PlotType = 'plot' | 'scatter' | 'bar' | 'imshow' | 'contour' | 'pcolormesh' | 'pie' | 'fill';
 type PlotDataOption = 'required' | 'optional';
 
 const PLOT_DEFINITION: { [key in PlotType]: { [key: string]: PlotDataOption } } = {
     plot: {
         x: 'optional',
+        y: 'required',
+    },
+    scatter: {
+        x: 'required',
         y: 'required',
     },
     bar: {
@@ -98,6 +102,17 @@ const PLOT_DEFINITION: { [key in PlotType]: { [key: string]: PlotDataOption } } 
         y2: 'required'
     }
 };
+
+const PLOT_TYPE_DESCRIPTION = {
+    plot: 'Line-Dot plot',
+    scatter: 'Scatter plot',
+    bar: 'Bar plot',
+    imshow: 'Image plot',
+    contour: 'Contour plot',
+    pcolormesh: 'Pcolormesh plot',
+    pie: 'Pie plot',
+    fill: 'Fill plot'
+}
 
 class PlotData {
     plot_type: PlotType;
@@ -143,6 +158,10 @@ class PlotData {
             }
         }
         return true;
+    }
+
+    getDescriptivePlotType(): string {
+        return PLOT_TYPE_DESCRIPTION[this.plot_type];
     }
 }
 

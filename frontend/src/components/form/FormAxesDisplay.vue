@@ -2,7 +2,7 @@
 </script>
 
 <template>
-
+    [[ vue-grid-layout OTL ]]
 </template>
 
 <style lang="css" scoped>
