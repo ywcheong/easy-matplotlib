@@ -6,10 +6,13 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+// PrimeVue Settings
 import PrimeVue from 'primevue/config'
 import Tooltip from 'primevue/tooltip';
+import ToastService from 'primevue/toastservice'
+
+// PrimeVue Themes
 import { definePreset } from '@primevue/themes'
-import Aura from '@primevue/themes/aura'
 import Nora from '@primevue/themes/nora'
 
 const MyPreset = definePreset(Nora, {
@@ -30,12 +33,7 @@ const MyPreset = definePreset(Nora, {
     }
 })
 
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-
-app.use(PrimeVue, {
+const PrimeVueCustomTheme = {
     theme: {
         preset: MyPreset,
         options: {
@@ -44,8 +42,11 @@ app.use(PrimeVue, {
             cssLayer: false
         }
     }
-})
+}
 
-app.directive('tooltip', Tooltip)
-
-app.mount('#app')
+createApp(App).use(router)
+    .use(PrimeVue, PrimeVueCustomTheme)
+    .use(createPinia())
+    .use(ToastService)
+    .directive('tooltip', Tooltip)
+    .mount('#app')

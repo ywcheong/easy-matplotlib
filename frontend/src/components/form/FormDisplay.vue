@@ -8,10 +8,6 @@ import FormPlotDisplay from './FormPlotDisplay.vue';
 import FormAxesDisplay from './FormAxesDisplay.vue';
 import FormFigureDisplay from './FormFigureDisplay.vue';
 
-import { useRenderRequestStore } from '@/stores/RenderRequest';
-
-const RenderRequest = useRenderRequestStore();
-
 </script>
 
 <template>
@@ -20,14 +16,16 @@ const RenderRequest = useRenderRequestStore();
             <FormDataDisplay />
         </Panel>
         <Panel header="Plot">
-            <FormPlotDisplay />
+            <!-- <FormPlotDisplay /> -->
+            TODO
         </Panel>
         <Panel header="Axes">
-            <FormAxesDisplay />
+            <!-- <FormAxesDisplay /> -->
+            TODO
         </Panel>
         <Panel header="Figure">
-            <FormFigureDisplay />
-            <!-- <Button @click="console.log(RenderRequest)" label="debug"/> -->
+            <!-- <FormFigureDisplay /> -->
+            TODO
         </Panel>
     </ScrollPanel>
 </template>

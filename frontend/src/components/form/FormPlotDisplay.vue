@@ -61,50 +61,58 @@
         </template>
     </Card>
 
-    <Button label="New Plot" icon="pi pi-plus" class="p-button-success" size="small" @click="newPlotSelect = true;"/>
+    <Button label="New Plot" icon="pi pi-plus" class="p-button-success" size="small" @click="newPlotSelect = true;" />
     <Dialog header="New Plot" v-model:visible="newPlotSelect" :modal="true">
         <template #footer>
             <!-- Display 3 x 3 squares, each square has black border with descriptive image at its center, and below the image,
              the description text is displayed. 
                 After clicking on the square, the dialog will close and the new plot will be added to the list. -->
             <div class="grid grid-cols-4 gap-4">
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('plot');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('plot');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Line-Dot Plot</span>
                     <span>(.plot)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('scatter');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('scatter');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Scatter Plot</span>
                     <span>(.scatter)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('bar');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('bar');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Bar Plot</span>
                     <span>(.bar)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pie');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pie');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Pie Plot</span>
                     <span>(.pie)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('fill');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('fill');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Fill Plot</span>
                     <span>(.fill)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('imshow');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('imshow');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Image Show Plot</span>
                     <span>(.imshow)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('contour');"/>
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('contour');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Contour Plot</span>
                     <span>(.contour)</span>
                 </div>
-                <div class="border border-black flex flex-col items-center">
-                    <img src="https://via.placeholder.com/150" alt="placeholder" @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pcolormesh');" />
+                <div class="border border-black flex flex-col items-center"
+                    @click="newPlotSelect = false; RenderRequest.addEmptyPlot('pcolormesh');">
+                    <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Color Mesh Plot</span>
                     <span>(.pcolormesh)</span>
                 </div>

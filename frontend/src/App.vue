@@ -2,9 +2,12 @@
 import { RouterView } from 'vue-router';
 import HeaderDisplay from '@components/layout/HeaderDisplay.vue';
 import FooterDisplay from '@components/layout/FooterDisplay.vue';
+
+import Toast from 'primevue/toast';
 </script>
 
 <template>
+  <Toast />
   <div class="flex flex-col h-dvh text-sm">
     <HeaderDisplay class="flex-shrink-0"/>
     <RouterView class="flex-grow overflow-auto min-h-2"/>
