@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import Ajv from 'ajv';
 import schema from '@/schema/RenderRequest.schema.json'
+import FormPlotDisplay from '@/components/form/FormPlotDisplay.vue';
 
 // =====================================================
 //   Figure
@@ -56,20 +57,115 @@ interface AxesElement {
 interface DataElement {
     name: string;
     value: number[];
-    raw_value?: string;
+    value_text?: string;
 }
 
 // =====================================================
 //   Plot.Data Format
 // =====================================================
 
-type PlotRelation = 'plot' | 'scatter';
-type BasePlotData = SimplePlotData;
+type PlotType = 'plot' | 'bar' | 'imshow' | 'contour' | 'pcolormesh' | 'pie' | 'fill';
+type PlotDataOption = 'required' | 'optional';
 
-interface SimplePlotData {
-    relation: 'plot';
-    x: string;
-    y: string;
+const PLOT_DEFINITION: { [key in PlotType]: { [key: string]: PlotDataOption } } = {
+    plot: {
+        x: 'optional',
+        y: 'required',
+    },
+    bar: {
+        x: 'optional',
+        height: 'required',
+    },
+    imshow: {
+        z: 'required'
+    },
+    contour: {
+        x: 'optional',
+        y: 'optional',
+        z: 'required'
+    },
+    pcolormesh: {
+        x: 'optional',
+        y: 'optional',
+        z: 'required'
+    },
+    pie: {
+        z: 'required'
+    },
+    fill: {
+        x: 'required',
+        y1: 'required',
+        y2: 'required'
+    }
+};
+
+class PlotData {
+    plot_type: PlotType;
+    member_data: { [key: string]: string };
+
+    constructor(plot_type: PlotType) {
+        this.plot_type = plot_type;
+        this.member_data = {};
+
+        const members = this.getMembers();
+        for (const i in members) {
+            this.member_data[members[i]] = '';
+        }
+
+        console.log(this.member_data);
+    }
+    // getMembers: return required and not-required fields of datas for each plot_type
+    // ex. { x: 'optional', y: 'required' }
+    getMembers(): string[] {
+        return Object.keys(PLOT_DEFINITION[this.plot_type]);
+    }
+
+    getMemberData(key: string): string {
+        return this.member_data[key];
+    }
+
+    isMemberRequired(key: string): boolean {
+        return PLOT_DEFINITION[this.plot_type][key] == 'required';
+    }
+
+    // setMembers: get one of getmembers as key, and set value as DataElement.name and store it
+    // ex. setMembers('x', 'data1')
+    setMemberAs(member_name: string, data_name: string) {
+        this.member_data[member_name] = data_name;
+    }
+
+    // isValid: check if every required fields are complete
+    isValid(): boolean {
+        const members = this.getMembers();
+        for (const key in members) {
+            if (members[key] == 'required' && !(key in this.member_data)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+class SimplePlotStyle implements PlotStyle {
+    style_name: string | null;
+    linestyle: 'solid' | 'dashed' | 'dashdot' | 'dotted' | 'none';
+
+    constructor() {
+        this.style_name = null;
+        this.linestyle = 'solid';
+    }
+}
+
+export class PlotElement {
+    name: string;
+    data: PlotData;
+    style: PlotStyle;
+
+    constructor() {
+        this.name = '';
+        this.data = new PlotData('plot');
+        this.style = new SimplePlotStyle();
+    }
 }
 
 // =====================================================
@@ -79,12 +175,6 @@ interface SimplePlotData {
 interface PlotStyle extends BaseStyle {
     linestyle?: 'solid' | 'dashed' | 'dashdot' | 'dotted' | 'none';
     // todo
-}
-
-interface PlotElement {
-    name: string;
-    data: BasePlotData;
-    style: PlotStyle;
 }
 
 // =====================================================
@@ -107,15 +197,15 @@ export const useRenderRequestStore = defineStore('renderRequest', () => {
             axes: [[]],
             style: { style_name: null }
         },
-        axes: [],
-        plot: [],
-        data: []
+        axes: [] as AxesElement[],
+        plot: [] as PlotElement[],
+        data: [] as DataElement[]
     });
 
     // Getters
     const getFigure = computed(() => renderRequest.value.figure);
     const getAxes = computed(() => renderRequest.value.axes);
-    const getPlot = computed(() => renderRequest.value.plot);
+    const getPlot = computed(() => (renderRequest.value.plot as PlotElement[]));
     const getData = computed(() => renderRequest.value.data);
 
     // Actions
@@ -160,19 +250,12 @@ export const useRenderRequestStore = defineStore('renderRequest', () => {
         });
     }
 
-    function addEmptyPlot(plot_type: PlotRelation) {
-        if (plot_type == 'plot'){
-            // Simple Plot
-            renderRequest.value.plot.push({
-                name: '',
-                data: {
-                    relation: 'plot',
-                    x: '',
-                    y: '',
-                },
-                style: { style_name: null }
-            });
-        }
+    function addEmptyPlot(plot_type: PlotType) {
+        renderRequest.value.plot.push({
+            name: '',
+            data: new PlotData(plot_type),
+            style: { style_name: null }
+        });
     }
 
     function addEmptyData() {
