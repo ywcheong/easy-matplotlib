@@ -16,7 +16,7 @@ import FormFigureDisplay from './FormFigureDisplay.vue';
             <FormDataDisplay />
         </Panel>
         <Panel header="Plot">
-            <!-- <FormPlotDisplay /> -->
+            <FormPlotDisplay />
             TODO
         </Panel>
         <Panel header="Axes">
