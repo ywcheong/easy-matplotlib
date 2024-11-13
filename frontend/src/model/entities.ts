@@ -62,3 +62,11 @@ export class PyPlot {
         }
     }
 }
+
+// Request
+export class PyRequest {
+    dataList: PyData[] = [];
+    plotList: PyPlot[] = [];
+
+    constructor() {}
+}

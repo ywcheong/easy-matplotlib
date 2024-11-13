@@ -1,6 +1,5 @@
-import { PyValidator, type Failure } from "@/interface/validator";
-import { PyData, PyPlot } from "@/model/entities";
-import { PyRequest } from "@/service/pyrequest";
+import { PyValidator } from "@/interface/validator";
+import { PyData, PyPlot, PyRequest } from "@/model/entities";
 
 import { MessageManager } from "@/service/message";
 
@@ -13,31 +12,30 @@ export class PyDataValidator extends PyValidator {
         super(messageManager);
     }
 
-    formatName(): Failure | true {
+    async isValidName(): Promise<boolean> {
         // RequestPack.ts verifyName
         const given_name = this.data.name;
 
         if (!given_name) {
-            return { summary: "Invalid Data Name", detail: "Name must not be empty" };
+            this.messageManager.sendError("Invalid Data Name", "Name must not be empty");
+            return false;
         }
 
         if (this.pyrequest.dataList.some((data) => data !== this.data && data.name === given_name)) {
-            this.data.name = "";
-            return { summary: "Invalid Data Name", detail: "Name must be unique" };
+            this.messageManager.sendError("Invalid Data Name", "Name must be unique");
+            return false;
         }
 
         return true;
     }
 
-    formatValue(): Failure | true {
-        // RequestPack.ts verifyValue
+    async isValidFormat(): Promise<boolean> {
         let given_text = this.data.value;
         let is_wrapped = false;
 
         if (!given_text) {
-            this.data.value = "";
-            this.data.valueShape = [];
-            return { summary: "Invalid Data Value", detail: "Empty Data" };
+            this.messageManager.sendError("Invalid Data Value", "Data must not be empty");
+            return false;
         }
 
         // Check if the cleaned text is a list
@@ -54,9 +52,8 @@ export class PyDataValidator extends PyValidator {
 
             if (!Array.isArray(parsed)) {
                 // Not a valid Array
-                this.data.value = "";
-                this.data.valueShape = [];
-                return { summary: "Invalid Data Value", detail: "Data is not an array" };
+                this.messageManager.sendError("Invalid Data Value", "Data must be an array");
+                return false;
             }
 
             const is1DArray = parsed.every((item) => typeof item === 'number');
@@ -64,11 +61,10 @@ export class PyDataValidator extends PyValidator {
 
             if (is1DArray) {
                 if (is_wrapped)
-                    this.messageManager.sendInfo("Data Formatting", "Your data is automatically wrapped in a list");
+                    this.messageManager.sendInfo("Data Formatting", "Your data has been automatically wrapped in a list");
 
                 this.data.value = cleanedText;
                 this.data.valueShape = [parsed.length];
-
                 return true;
             }
 
@@ -77,13 +73,12 @@ export class PyDataValidator extends PyValidator {
                 const isRectangular = parsed.every((row) => row.length === firstRowLength);
 
                 if (!isRectangular) {
-                    this.data.value = "";
-                    this.data.valueShape = [];
-                    return { summary: "Invalid Data Value", detail: "Data is not a rectangular form" };
+                    this.messageManager.sendError("Invalid Data Value", "Data is not a rectangular form");
+                    return false;
                 }
 
                 if (is_wrapped)
-                    this.messageManager.sendInfo("Auto Data Formatting", "Your data is automatically wrapped in a list");
+                    this.messageManager.sendInfo("Data Formatting", "Your data has been automatically wrapped in a list");
 
                 this.data.value = cleanedText;
                 this.data.valueShape = [parsed.length, firstRowLength];
@@ -91,34 +86,22 @@ export class PyDataValidator extends PyValidator {
             }
 
             // Not 1D/2D array
-            this.data.value = "";
-            this.data.valueShape = [];
-            return { summary: "Invalid Data Value", detail: "Data must be a 1D or 2D array of numbers" };
+            this.messageManager.sendError("Invalid Data Value", "Data must be a 1D or 2D array of numbers");
+            return false;
 
         } catch (e) {
             // JSON parsing failed, not a valid list
-            this.data.value = "";
-            this.data.valueShape = [];
-            return { summary: "Invalid Data Value", detail: "JSON Parse failed" };
+            this.messageManager.sendError("Invalid Data Value", "Data must be a valid JSON array");
+            return false;
         }
     }
 
-    collectProblems(): Failure[] {
-        // todo
-        const problems: Failure[] = [];
-
+    async validate(): Promise<boolean> {
         // formatName & formatValue
-        const nameResult = this.formatName();
-        if (nameResult !== true) {
-            problems.push(nameResult);
-        }
+        const name = await this.isValidName();
+        const format = await this.isValidFormat();
 
-        const valueResult = this.formatValue();
-        if (valueResult !== true) {
-            problems.push(valueResult);
-        }
-
-        return problems;
+        return name && format;
     }
 }
 
@@ -131,28 +114,29 @@ export class PyPlotValidator extends PyValidator {
         super(messageManager);
     }
 
-    formatName(): Failure | true {
+    async isValidName(): Promise<boolean> {
         // Check name uniqueness
         const given_name = this.plot.name;
 
         if (!given_name) {
-            return { summary: "Invalid Plot Name", detail: "Name must not be empty" };
+            this.messageManager.sendError("Invalid Plot Name", "Name must not be empty");
+            return false;
         }
 
         if (this.pyrequest.plotList.some((plot) => plot !== this.plot && plot.name === given_name)) {
-            this.plot.name = "";
-            return { summary: "Invalid Plot Name", detail: "Name must be unique" };
+            this.messageManager.sendError("Invalid Plot Name", "Name must be unique");
+            return false;
         }
 
         return true;
     }
 
-    formatDataSlot(fieldName: string): Failure | true {
+    async isValidDataSlot(fieldName: string): Promise<boolean> {
         // Check if the data slot is valid
         const dataSlot = this.plot.dataSlot;
 
         if (!dataSlot) {
-            return { summary: "CRITICAL ERROR", detail: "Reset Program (ERRCODE: DATASLOT-NOT-FOUND)" };
+            this.messageManager.sendError("Critical Error", "Data Slot not found");
         }
 
         // For each field name on PyDataSlot, check if the given field name is valid
@@ -163,8 +147,8 @@ export class PyPlotValidator extends PyValidator {
                 const dataExists = this.pyrequest.dataList.some((data) => data.name === dataName);
 
                 if (!dataExists) {
-                    dataSlot[field].name = "";
-                    return { summary: "Invalid Data Slot", detail: `Data "${dataName}" not found` };
+                    this.messageManager.sendError("Invalid Data Slot", `Data "${dataName}" not found`);
+                    return false;
                 }
             }
         }
@@ -172,28 +156,62 @@ export class PyPlotValidator extends PyValidator {
         return true;
     }
 
-    collectProblems(): Failure[] {
+    async validate(): Promise<boolean> {
+        const name = await this.isValidName();
+
         // todo
-        const problems: Failure[] = [];
-        return problems;
+
+        return name;
     }
 }
 
+
 export class PyRequestValidator extends PyValidator {
-    constructor(protected messageManager: MessageManager) {
+    constructor(
+        protected messageManager: MessageManager,
+        protected pyrequest: PyRequest
+    ) {
         super(messageManager);
     }
 
-    collectProblems(): Failure[] {
-        // todo
-        const problems: Failure[] = [];
-        return problems;
+    async isValidDataList(): Promise<boolean> {
+        const dataList = this.pyrequest.dataList;
+
+        // check each dataElement in dataList
+        const validationPromises = dataList.map(async (data) => {
+            const validator = new PyDataValidator(this.messageManager, data, this.pyrequest);
+            return await validator.validate();
+        });
+
+        const validationResults = await Promise.all(validationPromises);
+
+        if (validationResults.some(isValid => !isValid)) {
+            return false;
+        }
+
+        return true;
     }
 
-    // format~(): Failure | true
-    //  -> [Modifier, called via the component event (e.g. @blur)]
+    async isValidPlotList(): Promise<boolean> {
+        const plotList = this.pyrequest.plotList;
 
-    // collectProblems(): Failure[]
-    //  -> [Modifier, called from the Translate module.
-    //      It calls format~() and collects the results to return as an array.]
+        // check each plotElement in plotList
+        for (const plot of plotList) {
+            const validator = new PyPlotValidator(this.messageManager, plot, this.pyrequest);
+            const isValid = await validator.validate();
+
+            if (!isValid) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    async validate(): Promise<boolean> {
+        const data = await this.isValidDataList();
+        const plot = await this.isValidPlotList();
+
+        return data && plot;
+    }
 }

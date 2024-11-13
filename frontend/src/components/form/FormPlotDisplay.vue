@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Card, FloatLabel, InputText, Button, Select, Dialog } from 'primevue';
-import { usePyRequest } from '@/stores/usepyrequest';
+import { usePyRequestBuilder } from '@/stores/requestbuild';
+import { PyData } from '@/model/entities';
 
-const pyrequest = usePyRequest();
+const builder = usePyRequestBuilder();
 
 // new plot select
 const newPlotSelect = ref(false);
 </script>
 
 <template>
-    <Card class="border border-black mb-3" v-for="(pyplot, index) in pyrequest.getPlotList" :key="index">
+    <Card class="border border-black mb-3" v-for="(pyplot, index) in builder.getPlotList" :key="index">
         <!-- Title -->
         <template #title class="font-extrabold">{{ pyplot.getDescriptiveType() }}</template>
 
         <template #content>
             <!-- Plot Naming -->
             <FloatLabel class="mt-3" variant="on">
-                <InputText v-model="pyplot.name" @blur="pyrequest.formatPlotName(pyplot)"
+                <InputText v-model="pyplot.name" @blur="builder.checkPlotName(pyplot)"
                     v-tooltip.top="'Unique plot name.'" size="small" :invalid="pyplot.name.length === 0" />
                 <label :for="`plot-name-${index}`" class="p-d-block">Plot Name</label>
             </FloatLabel>
@@ -36,7 +37,7 @@ const newPlotSelect = ref(false);
                             <div class="flex flex-column">
                                 <Select @change="field.name = $event.value" size="small"
                                     :invalid="field.name.length === 0"
-                                    :options="pyrequest.getDataList.map(dataElement => dataElement.name)"
+                                    :options="builder.getDataList.map((data: PyData) => ({ label: data.name, value: data.name }))"
                                     :placeholder="`(${fieldName})`" class="content-center" :key="fieldName" />
                             </div>
                         </div>
@@ -66,7 +67,7 @@ const newPlotSelect = ref(false);
 
             <!-- Delete Plot -->
             <Button label="Delete Plot" icon="pi pi-trash" class="p-button-danger mt-3" size="small"
-                @click="pyrequest.removePlot(index)" />
+                @click="builder.removePlot(index)" />
 
         </template>
     </Card>
@@ -76,13 +77,13 @@ const newPlotSelect = ref(false);
         <template #footer>
             <div class="grid grid-cols- gap-4">
                 <div class="border border-black flex flex-col items-center"
-                    @click="newPlotSelect = false; pyrequest.addEmptyPlot('line');">
+                    @click="newPlotSelect = false; builder.addEmptyPlot('line');">
                     <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Line-Dot Plot</span>
                     <span>(.plot)</span>
                 </div>
                 <div class="border border-black flex flex-col items-center"
-                    @click="newPlotSelect = false; pyrequest.addEmptyPlot('scatter');">
+                    @click="newPlotSelect = false; builder.addEmptyPlot('scatter');">
                     <img src="https://via.placeholder.com/150" alt="placeholder" />
                     <span>Scatter Plot</span>
                     <span>(.scatter)</span>

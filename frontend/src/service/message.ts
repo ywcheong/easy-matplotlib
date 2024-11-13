@@ -1,40 +1,19 @@
-
-import toasteventbus from 'primevue/toasteventbus'
-
 import { type MessageChannel } from '@/interface/message'
 
-export class DirectToastMessageChannel implements MessageChannel {
-    sendSuccess(summary: string, detail: string): void {
-        toasteventbus.emit('add', { severity: 'success', summary: summary, detail: detail, life: 3000 })
-    }
-
-    sendInfo(summary: string, detail: string): void {
-        toasteventbus.emit('add', { severity: 'info', summary: summary, detail: detail, life: 3000 })
-    }
-
-    sendWarning(summary: string, detail: string): void {
-        toasteventbus.emit('add', { severity: 'warn', summary: summary, detail: detail, life: 3000 })
-    }
-
-    sendError(summary: string, detail: string): void {
-        toasteventbus.emit('add', { severity: 'error', summary: summary, detail: detail, life: 3000 })
-    }
-}
-
 export class ConsoleMessageChannel implements MessageChannel {
-    sendSuccess(summary: string, detail: string): void {
+    async sendSuccess(summary: string, detail: string) {
         console.log(`[Success] ${summary} => ${detail}`)
     }
     
-    sendInfo(summary: string, detail: string): void {
+    async sendInfo(summary: string, detail: string) {
         console.info(`[Info] ${summary} => ${detail}`)
     }
     
-    sendWarning(summary: string, detail: string): void {
+    async sendWarning(summary: string, detail: string) {
         console.warn(`[Warn] ${summary} => ${detail}`)
     }
     
-    sendError(summary: string, detail: string): void {
+    async sendError(summary: string, detail: string) {
         console.error(`[Error] ${summary} => ${detail}`)
     }
 }
@@ -42,30 +21,23 @@ export class ConsoleMessageChannel implements MessageChannel {
 export class MessageManager {
     private channels: MessageChannel[] = [];
 
-    addChannel(channel: MessageChannel): void {
+    async addChannel(channel: MessageChannel) {
         this.channels.push(channel);
     }
 
-    removeChannel(channel: MessageChannel): void {
-        const index = this.channels.indexOf(channel);
-        if (index >= 0) {
-            this.channels.splice(index, 1);
-        }
+    async sendSuccess(summary: string, detail: string) {
+        this.channels.map(channel => channel.sendSuccess(summary, detail));
     }
 
-    sendSuccess(summary: string, detail: string): void {
-        this.channels.forEach(channel => channel.sendSuccess(summary, detail));
-    }
-
-    sendInfo(summary: string, detail: string): void {
-        this.channels.forEach(channel => channel.sendInfo(summary, detail));
+    async sendInfo(summary: string, detail: string) {
+        this.channels.map(channel => channel.sendInfo(summary, detail));
     }
     
-    sendWarning(summary: string, detail: string): void {
-        this.channels.forEach(channel => channel.sendWarning(summary, detail));
+    async sendWarning(summary: string, detail: string) {
+        this.channels.map(channel => channel.sendWarning(summary, detail));
     }
     
-    sendError(summary: string, detail: string): void {
-        this.channels.forEach(channel => channel.sendError(summary, detail));
+    async sendError(summary: string, detail: string) {
+        this.channels.map(channel => channel.sendError(summary, detail));
     }
 }

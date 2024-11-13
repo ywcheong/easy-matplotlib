@@ -10,12 +10,9 @@ const routes: Array<RouteRecordSingleView> = [
     component: WelcomeView
   },
   {
-    path: '/editor/:requestData?',
-    name: 'editorWithData',
-    component: EditorView,
-    props: (route) => {
-      return {};
-    }
+    path: '/editor/:base64Data?',
+    name: 'editor',
+    component: EditorView
   },
   {
     path: '/about',

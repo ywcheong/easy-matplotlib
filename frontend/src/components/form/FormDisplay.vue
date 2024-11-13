@@ -17,15 +17,12 @@ import FormFigureDisplay from './FormFigureDisplay.vue';
         </Panel>
         <Panel header="Plot">
             <FormPlotDisplay />
-            TODO
         </Panel>
         <Panel header="Axes">
-            <!-- <FormAxesDisplay /> -->
-            TODO
+            <!-- TODO <FormAxesDisplay /> -->
         </Panel>
         <Panel header="Figure">
-            <!-- <FormFigureDisplay /> -->
-            TODO
+            <!-- TODO <FormFigureDisplay /> -->
         </Panel>
     </ScrollPanel>
 </template>
